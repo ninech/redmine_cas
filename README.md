@@ -2,7 +2,7 @@
 
 Plugin to CASify your Redmine installation.
 
-## Compatibilty
+## Compatibility
 
 Tested with Redmine 2.2.3, but should be working fine with Redmine 2.x and possibly 1.x.
 
