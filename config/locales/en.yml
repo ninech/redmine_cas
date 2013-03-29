@@ -1,0 +1,7 @@
+en:
+  redmine_cas_settings_enabled_label: 'Enabled'
+  redmine_cas_settings_cas_url_label: 'CAS server URL'
+  redmine_cas_settings_cas_url_helptext: 'Base URL to your CAS server.'
+  redmine_cas_settings_attributes_mapping_label: 'Attributes mapping'
+  redmine_cas_settings_attributes_mapping_helptext: 'This is how the plugin maps extended attributes from the CAS server to the redmine model.<br /><code>attribute_name_in_redmine=attribute_name_in_cas_response</code><br />Separate entries with <code>&amp;</code> (query-string).<br />Example: <code>firstname=first_name&amp;lastname=last_name&amp;mail=email</code><br />Valid attribute names: <code>%{attribute_names}</code>'
+  rbcas_cas_user_not_found: '"%{user}" was authenticated but needs to be created in Redmine first.'
