@@ -5,6 +5,7 @@ Plugin to CASify your Redmine installation.
 ## Compatibility
 
 Tested with Redmine 2.2.3, but should be working fine with Redmine 2.x and possibly 1.x.
+We use [CASino](http://casino.rbcas.com) as CAS server, but it should work with others as well.
 
 ## Installation
 
