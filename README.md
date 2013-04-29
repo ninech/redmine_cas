@@ -4,12 +4,12 @@ Plugin to CASify your Redmine installation.
 
 ## Compatibility
 
-Tested with Redmine 2.2.3, but should be working fine with Redmine 2.x and possibly 1.x.
+Tested with Redmine 2.2.3 and 2.3.0, but should work fine with Redmine 2.x and possibly 1.x.
 We use [CASino](http://casino.rbcas.com) as CAS server, but it should work with others as well.
 
 ## Installation
 
-1. Download or clone this repository and place it in the Redmine plugin directory
+1. Download or clone this repository and place it in the Redmine `plugins` directory
 2. Restart your webserver
 3. Open Redmine and check if the plugin is visible under Administration > Plugins
 4. Follow the "Configure" link and set the parameters
