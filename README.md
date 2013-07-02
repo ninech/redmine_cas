@@ -24,7 +24,7 @@ The default login page will still work when you access it directly (http://examp
 
 ### Single Sign Out, Single Logout
 
-Session need to be stored in the database to make Single Sign Out work.
+The sessions have to be stored in the database to make Single Sign Out work.
 You can achieve this with a tiny plugin: [redmine_activerecord_session_store](https://github.com/pencil/redmine_activerecord_session_store)
 
 ## Copyright
