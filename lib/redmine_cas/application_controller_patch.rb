@@ -38,7 +38,7 @@ module RedmineCAS
           else
             self.logged_user = user
           end
-          redirect_to url_for(params.merge(ticket: nil))
+          redirect_to url_for(params.merge(:ticket => nil))
         else
           # CASClient called redirect_to
         end
