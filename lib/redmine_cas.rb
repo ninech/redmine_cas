@@ -12,6 +12,10 @@ module RedmineCAS
     setting(:enabled)
   end
 
+  def autocreate_users?
+    setting(:autocreate_users)
+  end
+
   def setup!
     return unless enabled?
     CASClient::Frameworks::Rails::Filter.configure(
