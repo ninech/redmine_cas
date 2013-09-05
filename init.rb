@@ -7,14 +7,15 @@ Redmine::Plugin.register :redmine_cas do
   name 'Redmine CAS'
   author 'Nils Caspar (Nine Internet Solutions AG)'
   description 'Plugin to CASify your Redmine installation.'
-  version '1.0.1'
+  version '1.0.2'
   url 'https://github.com/ninech/redmine_cas'
   author_url 'http://www.nine.ch/'
 
   settings :default => {
     'enabled' => false,
     'cas_url' => 'https://',
-    'attributes_mapping' => 'firstname=first_name&lastname=last_name&mail=email'
+    'attributes_mapping' => 'firstname=first_name&lastname=last_name&mail=email',
+    'autocreate_users' => false
   }, :partial => 'redmine_cas/settings'
 
   Rails.configuration.to_prepare do
