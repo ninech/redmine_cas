@@ -33,4 +33,4 @@ By enabling this setting, successfully authenticated users will be automatically
 
 ## Copyright
 
-Copyright (c) 2013 Nine Internet Solutions AG. See LICENSE.txt for further details.
+Copyright (c) 2013-2014 Nine Internet Solutions AG. See LICENSE.txt for further details.
