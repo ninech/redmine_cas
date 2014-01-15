@@ -30,7 +30,7 @@ module RedmineCAS
           user = User.find_by_login(session[:cas_user])
 
           # Auto-create user if possible
-          if user.nil? and RedmineCAS.autocreate_users?
+          if user.nil? && RedmineCAS.autocreate_users?
             user = User.new
             user.login = session[:cas_user]
             user.assign_attributes(RedmineCAS.user_extra_attributes_from_session(session))
