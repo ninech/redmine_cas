@@ -9,7 +9,7 @@ We use [CASino](http://casino.rbcas.com) as CAS server, but it should work with 
 
 ## Installation
 
-1. Download or clone this repository and place it in the Redmine `plugins` directory as `redmine_cas`.
+1. Download or clone this repository and place it in the Redmine `plugins` directory as `redmine_cas`
 2. Restart your webserver
 3. Open Redmine and check if the plugin is visible under Administration > Plugins
 4. Follow the "Configure" link and set the parameters
