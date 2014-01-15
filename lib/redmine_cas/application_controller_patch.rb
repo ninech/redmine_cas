@@ -59,11 +59,11 @@ module RedmineCAS
       end
 
       def cas_user_not_found
-        render_403 :message => l(:rbcas_cas_user_not_found, :user => session[:cas_user])
+        render_403 :message => l(:redmine_cas_user_not_found, :user => session[:cas_user])
       end
 
       def cas_user_not_created
-        render_403 :message => l(:rbcas_cas_user_not_created, :user => session[:cas_user])
+        render_403 :message => l(:redmine_cas_user_not_created, :user => session[:cas_user])
       end
     end
   end
