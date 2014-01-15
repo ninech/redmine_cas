@@ -12,3 +12,8 @@
 	<%= text_field_tag "settings[attributes_mapping]", @settings[:attributes_mapping], :size => 50 %>
 	<em class="info"><%= l(:redmine_cas_settings_attributes_mapping_helptext, :attribute_names => User.attribute_names.join(', ')).html_safe %></em>
 </p>
+<p>
+	<%= label_tag "settings[autocreate_users]", l(:redmine_cas_settings_autocreate_users_label) %>
+	<%= check_box_tag "settings[autocreate_users]", 1, @settings[:autocreate_users] %>
+  <em class="info"><%= l(:redmine_cas_settings_autocreate_users_helptext).html_safe %></em>
+</p>

@@ -27,6 +27,10 @@ The default login page will still work when you access it directly (http://examp
 The sessions have to be stored in the database to make Single Sign Out work.
 You can achieve this with a tiny plugin: [redmine_activerecord_session_store](https://github.com/pencil/redmine_activerecord_session_store)
 
+### Auto-create users
+
+By enabling this setting, successfully authenticated users will be automatically added into Redmine if they do not already exist. You *must* define the attribute mapping for at least firstname, lastname and mail attributes for this to work.
+
 ## Copyright
 
 Copyright (c) 2013 Nine Internet Solutions AG. See LICENSE.txt for further details.

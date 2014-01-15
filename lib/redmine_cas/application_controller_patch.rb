@@ -28,6 +28,16 @@ module RedmineCAS
       def login_with_cas
         if CASClient::Frameworks::Rails::Filter.filter(self)
           user = User.find_by_login(session[:cas_user])
+
+          # Auto-create user if possible
+          if user.nil? && RedmineCAS.autocreate_users?
+            user = User.new
+            user.login = session[:cas_user]
+            user.assign_attributes(RedmineCAS.user_extra_attributes_from_session(session))
+            return cas_user_not_created if !user.save
+            user.reload
+          end
+
           return cas_user_not_found if user.nil?
           return cas_account_pending unless user.active?
           user.update_attributes(RedmineCAS.user_extra_attributes_from_session(session))
@@ -50,6 +60,10 @@ module RedmineCAS
 
       def cas_user_not_found
         render_403 :message => l(:rbcas_cas_user_not_found, :user => session[:cas_user])
+      end
+
+      def cas_user_not_created
+        render_403 :message => l(:rbcas_cas_user_not_created, :user => session[:cas_user])
       end
     end
   end
