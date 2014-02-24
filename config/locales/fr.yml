@@ -1,0 +1,10 @@
+fr:
+  redmine_cas_settings_enabled_label: 'Activé'
+  redmine_cas_settings_cas_url_label: 'URL du serveur CAS'
+  redmine_cas_settings_cas_url_helptext: 'URL de base de votre serveur CAS.'
+  redmine_cas_settings_attributes_mapping_label: 'Association d''attributs'
+  redmine_cas_settings_attributes_mapping_helptext: 'Voici la manière dont le plugin associe les attributs étendus provenant du serveur CAS vers le modèle de Redmine.<br /><code>nom_d_attribut_dans_redmine=nom_d_attribut_dans_la_reponse_cas</code><br />Séparer les entrées avec <code>&amp;</code> (query-string).<br />Exemple: <code>firstname=first_name&amp;lastname=last_name&amp;mail=email</code><br />Noms d''attribut valides: <code>%{attribute_names}</code>'
+  redmine_cas_settings_autocreate_users_label: 'Créer les utilisateurs automatiquement'
+  redmine_cas_settings_autocreate_users_helptext: 'Créer automatiquement un utilisateur redmine s''il est authentifié avec succès.<br />Ceci ne fonctionnera que si vous spécifiez firstname, lastname et mail dans les associations d''attributs ci-dessus.'
+  redmine_cas_user_not_found: 'L''utilisateur "%{user}" a été authentifié mais doit d''abord être créé dans Redmine.'
+  redmine_cas_user_not_created: 'L''utilisateur "%{user}" a été authentifié, mais n''a pas pu être créé automatiquement dans Redmine. Il doit être ajouté manuellement.'
