@@ -34,7 +34,7 @@ module RedmineCAS
             user = User.new
             user.login = session[:cas_user]
             user.assign_attributes(RedmineCAS.user_extra_attributes_from_session(session))
-            return cas_user_not_created if !user.save
+            return cas_user_not_created(user) if !user.save
             user.reload
           end
 
@@ -62,7 +62,8 @@ module RedmineCAS
         render_403 :message => l(:redmine_cas_user_not_found, :user => session[:cas_user])
       end
 
-      def cas_user_not_created
+      def cas_user_not_created(user)
+        logger.error "Could not auto-create user: #{user.errors.full_messages.to_sentence}"
         render_403 :message => l(:redmine_cas_user_not_created, :user => session[:cas_user])
       end
     end
