@@ -5,6 +5,7 @@ module RedmineCAS
     def self.included(base)
       base.send(:include, InstanceMethods)
       base.class_eval do
+        alias_method_chain :verify_authenticity_token, :cas
         alias_method_chain :require_login, :cas
       end
     end
@@ -53,6 +54,18 @@ module RedmineCAS
         else
           # CASClient called redirect_to
         end
+      end
+
+      def verify_authenticity_token_with_cas
+        if cas_logout_request?
+          logger.info 'CAS logout request detected: Skipping validation of authenticity token'
+        else
+          verify_authenticity_token_without_cas
+        end
+      end
+
+      def cas_logout_request?
+        request.post? && params.has_key?('logoutRequest')
       end
 
       def cas_account_pending
