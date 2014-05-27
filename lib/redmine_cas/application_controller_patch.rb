@@ -7,6 +7,7 @@ module RedmineCAS
       base.class_eval do
         alias_method_chain :verify_authenticity_token, :cas
         alias_method_chain :require_login, :cas
+        alias_method_chain :session_expiration, :cas
       end
     end
 
@@ -79,6 +80,17 @@ module RedmineCAS
       def cas_user_not_created(user)
         logger.error "Could not auto-create user: #{user.errors.full_messages.to_sentence}"
         render_403 :message => l(:redmine_cas_user_not_created, :user => session[:cas_user])
+      end
+
+      def session_expiration_with_cas
+        return session_expiration_without_cas unless RedmineCAS.enabled? and RedmineCAS.cas_session_expiry?
+        if session[:user_id]
+          if session_expired? && !try_to_autologin
+            reset_session
+          else
+            session[:atime] = Time.now.utc.to_i
+          end
+        end
       end
     end
   end
