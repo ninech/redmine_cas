@@ -16,6 +16,10 @@ module RedmineCAS
     setting(:autocreate_users)
   end
 
+  def cas_session_expiry?
+	setting(:cas_session_expiry)
+  end
+
   def setup!
     return unless enabled?
     CASClient::Frameworks::Rails::Filter.configure(

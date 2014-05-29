@@ -17,3 +17,8 @@
   <%= check_box_tag "settings[autocreate_users]", 1, @settings[:autocreate_users] %>
   <em class="info"><%= l(:redmine_cas_settings_autocreate_users_helptext).html_safe %></em>
 </p>
+<p>
+  <%= label_tag "settings[cas_session_expiry]", l(:redmine_cas_settings_cas_session_expiry_label) %>
+  <%= check_box_tag "settings[cas_session_expiry]", 1, @settings[:cas_session_expiry] %>
+  <em class="info"><%= l(:redmine_cas_settings_cas_session_expiry_helptext).html_safe %></em>
+</p>
