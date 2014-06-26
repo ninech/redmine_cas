@@ -18,6 +18,8 @@ module RedmineCAS
       end
 
       def login_with_cas
+        return login_without_cas unless RedmineCAS.enabled?
+
         if User.current.logged?
           # User already logged in.
           redirect_back_or_default my_page_path
