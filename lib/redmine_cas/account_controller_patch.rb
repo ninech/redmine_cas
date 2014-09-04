@@ -25,9 +25,6 @@ module RedmineCAS
           return
         end
 
-        # The rest of this file just contains what was in
-        # application_controller_patch.rb before.
-
         if CASClient::Frameworks::Rails::Filter.filter(self)
           user = User.find_by_login(session[:cas_user])
 
