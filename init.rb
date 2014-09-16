@@ -3,6 +3,8 @@ require 'redmine_cas'
 require 'redmine_cas/application_controller_patch'
 require 'redmine_cas/account_controller_patch'
 
+require_dependency 'redmine_cas_hook_listener'
+
 Redmine::Plugin.register :redmine_cas do
   name 'Redmine CAS'
   author 'Nils Caspar (Nine Internet Solutions AG)'

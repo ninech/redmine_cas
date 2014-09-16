@@ -1,0 +1,5 @@
+<% if Setting.plugin_redmine_cas[:enabled] %>
+  <p style="text-align:center;">
+  <strong><%= link_to("Login with CAS", :controller => "account", :action => "cas") %></strong>
+  </p>
+<% end %>

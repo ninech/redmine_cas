@@ -19,8 +19,12 @@ We use [CASino](http://casino.rbcas.com) as CAS server, but it might work with o
 
 ### Usage
 
-This plugin was made for redmine installations without public areas ("Authentication required").
-The default login page will still work when you access it directly (http://example.com/path-to-redmine/login).
+If your installation has no public areas ("Authentication required") and you are not logged in, you will be
+redirected to the CAS-login page.  The default login page will still work when you access it directly 
+(http://example.com/path-to-redmine/login).
+
+If your installation is not "Authentication required", the login page will show a link that lets you login
+with CAS.
 
 ### Single Sign Out, Single Logout
 
