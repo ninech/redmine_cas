@@ -14,9 +14,12 @@ module RedmineCAS
       def require_login_with_cas
         return require_login_without_cas unless RedmineCAS.enabled?
         if !User.current.logged?
+          referrer = request.fullpath;
           respond_to do |format|
-            format.html { redirect_to :controller => 'account', :action => 'cas' }
-            format.atom { redirect_to :controller => 'account', :action => 'cas' }
+            # pass referer to cas action, to work around this problem:
+            # https://github.com/ninech/redmine_cas/pull/13#issuecomment-53697288
+            format.html { redirect_to :controller => 'account', :action => 'cas', :ref => referrer }
+            format.atom { redirect_to :controller => 'account', :action => 'cas', :ref => referrer }
             format.xml  { head :unauthorized, 'WWW-Authenticate' => 'Basic realm="Redmine API"' }
             format.js   { head :unauthorized, 'WWW-Authenticate' => 'Basic realm="Redmine API"' }
             format.json { head :unauthorized, 'WWW-Authenticate' => 'Basic realm="Redmine API"' }

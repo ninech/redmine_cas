@@ -48,7 +48,24 @@ module RedmineCAS
           else
             self.logged_user = user
           end
-          redirect_to url_for(params.merge(:ticket => nil))
+
+          # If a parameter :ref exists, redirect to :ref. This is a workaround for the
+          # usability problem I introduced trying to fix issue #9.
+          # https://github.com/ninech/redmine_cas/pull/13#issuecomment-53697288
+
+          if params.has_key?(:ref)
+            # do some basic validation on ref, to prevent a malicious link to redirect
+            # to another site.
+            new_url = params[:ref]
+            if /http(s)?:\/\/|@/ =~ new_url
+              # evil referrer!
+              redirect_to url_for(params.merge(:ticket => nil))
+            else
+              redirect_to request.base_url + params[:ref]
+            end
+          else
+            redirect_to url_for(params.merge(:ticket => nil))
+          end
         else
           # CASClient called redirect_to
         end
