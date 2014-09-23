@@ -21,7 +21,7 @@ module RedmineCAS
 
         if User.current.logged?
           # User already logged in.
-          redirect_back_or_default my_page_path
+          redirect_to_ref_or_default
           return
         end
 
@@ -39,6 +39,7 @@ module RedmineCAS
 
           return cas_user_not_found if user.nil?
           return cas_account_pending unless user.active?
+
           user.update_attribute(:last_login_on, Time.now)
           user.update_attributes(RedmineCAS.user_extra_attributes_from_session(session))
           if RedmineCAS.single_sign_out_enabled?
@@ -49,25 +50,24 @@ module RedmineCAS
             self.logged_user = user
           end
 
-          # If a parameter :ref exists, redirect to :ref. This is a workaround for the
-          # usability problem I introduced trying to fix issue #9.
-          # https://github.com/ninech/redmine_cas/pull/13#issuecomment-53697288
+          redirect_to_ref_or_default
+        end
+      end
 
-          if params.has_key?(:ref)
-            # do some basic validation on ref, to prevent a malicious link to redirect
-            # to another site.
-            new_url = params[:ref]
-            if /http(s)?:\/\/|@/ =~ new_url
-              # evil referrer!
-              redirect_to url_for(params.merge(:ticket => nil))
-            else
-              redirect_to request.base_url + params[:ref]
-            end
+      def redirect_to_ref_or_default
+        default_url = url_for(params.merge(:ticket => nil))
+        if params.has_key?(:ref)
+          # do some basic validation on ref, to prevent a malicious link to redirect
+          # to another site.
+          new_url = params[:ref]
+          if /http(s)?:\/\/|@/ =~ new_url
+            # evil referrer!
+            redirect_to default_url
           else
-            redirect_to url_for(params.merge(:ticket => nil))
+            redirect_to request.base_url + params[:ref]
           end
         else
-          # CASClient called redirect_to
+          redirect_to default_url
         end
       end
 
