@@ -21,6 +21,7 @@ module RedmineCAS
     CASClient::Frameworks::Rails::Filter.configure(
       :cas_base_url => setting(:cas_url),
       :logger => Rails.logger,
+      :validate_url  => setting(:cas_url)+"/p3/proxyValidate",
       :enable_single_sign_out => single_sign_out_enabled?
     )
   end
