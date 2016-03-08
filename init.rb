@@ -6,12 +6,11 @@ require 'redmine_cas/account_controller_patch'
 require_dependency 'redmine_cas_hook_listener'
 
 Redmine::Plugin.register :redmine_cas do
-  name 'Redmine CAS'
-  author 'Nils Caspar (Nine Internet Solutions AG)'
+  name 'Redmine CAS plugin'
+  author 'Robert Auer (Triology GmbH)'
   description 'Plugin to CASify your Redmine installation.'
-  version '1.2.1'
-  url 'https://github.com/ninech/redmine_cas'
-  author_url 'http://www.nine.ch/'
+  version '1.2.3'
+  url 'https://github.com/robertauer/redmine_cas'
 
   settings :default => {
     'enabled' => false,
