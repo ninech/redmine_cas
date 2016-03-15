@@ -37,6 +37,34 @@ module RedmineCAS
             user.reload
           end
 
+          # Auto-create user's groups and/or add him/her
+          for i in session[:cas_extra_attributes]
+            if i[0]=="allgroups"
+              for j in i[1]
+                begin
+                  #logger.info "DEBUG: i[1]: "+j.to_s
+                  group = Group.find_by(lastname: j.to_s.downcase)
+                  if group.to_s == ""
+                    #logger.info "DEBUG: creating group: "+j.to_s
+                    @newgroup = Group.new(:lastname => j.to_s)
+                    @newgroup.users << user
+                    if @newgroup.save
+                      #logger.info "DEBUG: group save worked"
+                    else
+                      logger.info "DEBUG: group save didn't work"
+                    end
+                  else
+                    #logger.info "DEBUG: group found: "+group.to_s
+                    group.users << user
+                  end
+                rescue Exception => e
+                  logger.info e.message
+                  #logger.info "DEBUG: FAIL! Group probably not found"
+                end
+              end
+            end
+          end
+
           return cas_user_not_found if user.nil?
           return cas_account_pending unless user.active?
 
