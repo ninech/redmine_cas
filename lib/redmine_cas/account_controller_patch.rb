@@ -38,28 +38,51 @@ module RedmineCAS
           end
 
           # Auto-create user's groups and/or add him/her
+          @usergroups = Array.new
           for i in session[:cas_extra_attributes]
             if i[0]=="allgroups"
               for j in i[1]
+                @usergroups << j
                 begin
-                  #logger.info "DEBUG: i[1]: "+j.to_s
                   group = Group.find_by(lastname: j.to_s.downcase)
                   if group.to_s == ""
-                    #logger.info "DEBUG: creating group: "+j.to_s
-                    @newgroup = Group.new(:lastname => j.to_s)
+                    # create group and add user
+                    @newgroup = Group.new(:lastname => j.to_s, :firstname => "cas")
                     @newgroup.users << user
-                    if @newgroup.save
-                      #logger.info "DEBUG: group save worked"
-                    else
-                      logger.info "DEBUG: group save didn't work"
-                    end
+                    @newgroup.save
                   else
-                    #logger.info "DEBUG: group found: "+group.to_s
-                    group.users << user
+                    # if not already: add user to existing group
+                    @users = User.active.in_group(group).all()
+                    if @users.include?(user)
+                      logger.info "DEBUG: user "+user.to_s
+                      logger.info "DEBUG: ...is already in group "+group.to_s
+                    else
+                      logger.info "DEBUG: user "+user.to_s
+                      logger.info "DEBUG: ...is not in group "+group.to_s
+                      logger.info "DEBUG: insert user into group "+group.to_s
+                      group.users << user
+                    end
                   end
                 rescue Exception => e
                   logger.info e.message
-                  #logger.info "DEBUG: FAIL! Group probably not found"
+                end
+              end
+              #logger.info "DEBUG: usergroups: "+@usergroups.to_s
+              @casgroups = Group.where(firstname: "cas")
+              for l in @casgroups
+                logger.info "DEBUG: casgroup: "+l.to_s
+                if not(@usergroups.include?(l.to_s))
+                  logger.info "DEBUG: not in usergroups: "+l.to_s
+                  logger.info "DEBUG: usergroups: "+@usergroups.to_s
+                  @casgroup = Group.find_by(lastname: l.to_s)
+                  # remove user from group
+
+                  logger.info "DEBUG: casgroup: "+@casgroup.to_s
+                  # remove group if empty
+                  for m in @users
+                    logger.info "DEBUG: user in group: "+m.to_s
+                  end
+                  logger.info "DEBUG: "
                 end
               end
             end
