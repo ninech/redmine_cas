@@ -46,20 +46,15 @@ module RedmineCAS
                 begin
                   group = Group.find_by(lastname: j.to_s.downcase)
                   if group.to_s == ""
+                    # if group does not exist
                     # create group and add user
                     @newgroup = Group.new(:lastname => j.to_s, :firstname => "cas")
                     @newgroup.users << user
                     @newgroup.save
                   else
                     # if not already: add user to existing group
-                    @users = User.active.in_group(group).all()
-                    if @users.include?(user)
-                      logger.info "DEBUG: user "+user.to_s
-                      logger.info "DEBUG: ...is already in group "+group.to_s
-                    else
-                      logger.info "DEBUG: user "+user.to_s
-                      logger.info "DEBUG: ...is not in group "+group.to_s
-                      logger.info "DEBUG: insert user into group "+group.to_s
+                    @groupusers = User.active.in_group(group).all()
+                    if not(@groupusers.include?(user))
                       group.users << user
                     end
                   end
@@ -67,22 +62,13 @@ module RedmineCAS
                   logger.info e.message
                 end
               end
-              #logger.info "DEBUG: usergroups: "+@usergroups.to_s
               @casgroups = Group.where(firstname: "cas")
               for l in @casgroups
-                logger.info "DEBUG: casgroup: "+l.to_s
-                if not(@usergroups.include?(l.to_s))
-                  logger.info "DEBUG: not in usergroups: "+l.to_s
-                  logger.info "DEBUG: usergroups: "+@usergroups.to_s
-                  @casgroup = Group.find_by(lastname: l.to_s)
+                @casgroup = Group.find_by(lastname: l.to_s)
+                @casgroupusers = User.active.in_group(@casgroup).all()
+                if @casgroupusers.include?(user) and not(@usergroups.include?(l.to_s))
                   # remove user from group
-
-                  logger.info "DEBUG: casgroup: "+@casgroup.to_s
-                  # remove group if empty
-                  for m in @users
-                    logger.info "DEBUG: user in group: "+m.to_s
-                  end
-                  logger.info "DEBUG: "
+                  @casgroup.users.delete(user)
                 end
               end
             end
