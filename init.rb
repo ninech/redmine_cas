@@ -9,7 +9,7 @@ Redmine::Plugin.register :redmine_cas do
   name 'Redmine CAS plugin'
   author 'Robert Auer (Triology GmbH)'
   description 'Plugin to CASify your Redmine installation.'
-  version '1.2.3'
+  version '1.2.4'
   url 'https://github.com/robertauer/redmine_cas'
 
   settings :default => {
