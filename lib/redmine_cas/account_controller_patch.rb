@@ -32,6 +32,7 @@ module RedmineCAS
           if user.nil? && RedmineCAS.autocreate_users?
             user = User.new
             user.login = session[:cas_user]
+            user.auth_source_id = 1
             user.assign_attributes(RedmineCAS.user_extra_attributes_from_session(session))
             return cas_user_not_created(user) if !user.save
             user.reload
