@@ -27,52 +27,56 @@ module RedmineCAS
 
         if CASClient::Frameworks::Rails::Filter.filter(self)
           user = User.find_by_login(session[:cas_user])
+          ces_admin_group = `/etc/ces/functions.sh get_config admin_group`
 
-          # Auto-create user if possible
+          # Auto-create user
           if user.nil? && RedmineCAS.autocreate_users?
             user = User.new
             user.login = session[:cas_user]
             user.auth_source_id = 1
             user.assign_attributes(RedmineCAS.user_extra_attributes_from_session(session))
-            return cas_user_not_created(user) if !user.save
-            user.reload
-          end
 
-          # Auto-create user's groups and/or add him/her
-          @usergroups = Array.new
-          for i in session[:cas_extra_attributes]
-            if i[0]=="allgroups"
-              for j in i[1]
-                @usergroups << j
-                begin
-                  group = Group.find_by(lastname: j.to_s.downcase)
-                  if group.to_s == ""
-                    # if group does not exist
-                    # create group and add user
-                    @newgroup = Group.new(:lastname => j.to_s, :firstname => "cas")
-                    @newgroup.users << user
-                    @newgroup.save
-                  else
-                    # if not already: add user to existing group
-                    @groupusers = User.active.in_group(group).all()
-                    if not(@groupusers.include?(user))
-                      group.users << user
-                    end
+            # Auto-create user's groups and/or add him/her
+            @usergroups = Array.new
+            for i in session[:cas_extra_attributes]
+              if i[0]=="allgroups"
+                for j in i[1]
+                  @usergroups << j
+                  if j == ces_admin_group
+                    user.admin = 1
                   end
-                rescue Exception => e
-                  logger.info e.message
+                  begin
+                    group = Group.find_by(lastname: j.to_s.downcase)
+                    if group.to_s == ""
+                      # if group does not exist
+                      # create group and add user
+                      @newgroup = Group.new(:lastname => j.to_s, :firstname => "cas")
+                      @newgroup.users << user
+                      @newgroup.save
+                    else
+                      # if not already: add user to existing group
+                      @groupusers = User.active.in_group(group).all()
+                      if not(@groupusers.include?(user))
+                        group.users << user
+                      end
+                    end
+                  rescue Exception => e
+                    logger.info e.message
+                  end
                 end
-              end
-              @casgroups = Group.where(firstname: "cas")
-              for l in @casgroups
-                @casgroup = Group.find_by(lastname: l.to_s)
-                @casgroupusers = User.active.in_group(@casgroup).all()
-                if @casgroupusers.include?(user) and not(@usergroups.include?(l.to_s))
-                  # remove user from group
-                  @casgroup.users.delete(user)
+                @casgroups = Group.where(firstname: "cas")
+                for l in @casgroups
+                  @casgroup = Group.find_by(lastname: l.to_s)
+                  @casgroupusers = User.active.in_group(@casgroup).all()
+                  if @casgroupusers.include?(user) and not(@usergroups.include?(l.to_s))
+                    # remove user from group
+                    @casgroup.users.delete(user)
+                  end
                 end
               end
             end
+            return cas_user_not_created(user) if !user.save
+            user.reload
           end
 
           return cas_user_not_found if user.nil?
