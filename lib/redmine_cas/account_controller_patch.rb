@@ -27,7 +27,11 @@ module RedmineCAS
 
         if CASClient::Frameworks::Rails::Filter.filter(self)
           user = User.find_by_login(session[:cas_user])
-          ces_admin_group = `/etc/ces/functions.sh get_config admin_group`
+          admingroup_exists = false
+          ces_admin_group = `etcdctl --peers $(cat /etc/ces/node_master):4001 get "/config/_global/admin_group"`
+          if $?.exitstatus == 0
+            admingroup_exists = true
+          end
 
           # Auto-create user
           if user.nil? && RedmineCAS.autocreate_users?
@@ -42,9 +46,6 @@ module RedmineCAS
               if i[0]=="allgroups"
                 for j in i[1]
                   @usergroups << j
-                  if j == ces_admin_group
-                    user.admin = 1
-                  end
                   begin
                     group = Group.find_by(lastname: j.to_s.downcase)
                     if group.to_s == ""
@@ -73,6 +74,11 @@ module RedmineCAS
                     @casgroup.users.delete(user)
                   end
                 end
+              end
+            end
+            if admingroup_exists
+              if @usergroups.include?(ces_admin_group.gsub("\n",""))
+                user.admin = 1
               end
             end
             return cas_user_not_created(user) if !user.save
