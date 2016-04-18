@@ -39,6 +39,10 @@ module RedmineCAS
             user.login = session[:cas_user]
             user.auth_source_id = 1
             user.assign_attributes(RedmineCAS.user_extra_attributes_from_session(session))
+            return cas_user_not_created(user) if !user.save
+            user.reload
+
+            user = User.find_by_login(session[:cas_user])
 
             # Auto-create user's groups and/or add him/her
             @usergroups = Array.new
@@ -76,13 +80,14 @@ module RedmineCAS
                 end
               end
             end
+            # Grant admin rights to user if he/she is in ces_admin_group
             if admingroup_exists
               if @usergroups.include?(ces_admin_group.gsub("\n",""))
-                user.admin = 1
+                user.update_attribute(:admin, 1)
+                return cas_user_not_created(user) if !user.save
+                user.reload
               end
             end
-            return cas_user_not_created(user) if !user.save
-            user.reload
           end
 
           return cas_user_not_found if user.nil?
