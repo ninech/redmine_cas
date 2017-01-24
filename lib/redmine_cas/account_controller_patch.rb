@@ -28,10 +28,8 @@ module RedmineCAS
         if CASClient::Frameworks::Rails::Filter.filter(self)
           user = User.find_by_login(session[:cas_user])
           admingroup_exists = false
-          ces_admin_group = `etcdctl --peers $(cat /etc/ces/node_master):4001 get "/config/_global/admin_group"`
-          if $?.exitstatus == 0
-            admingroup_exists = true
-          end
+          ces_admin_group = ENV['ADMIN_GROUP']
+          admingroup_exists = ces_admin_group != nil
 
           # Auto-create user
           if user.nil? && RedmineCAS.autocreate_users?
