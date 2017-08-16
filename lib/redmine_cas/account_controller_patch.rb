@@ -85,6 +85,10 @@ module RedmineCAS
               user.update_attribute(:admin, 1)
               return cas_user_not_created(user) if !user.save
               user.reload
+            else
+              user.update_attribute(:admin, 0)
+              return cas_user_not_created(user) if !user.save
+              user.reload
             end
           end
 
