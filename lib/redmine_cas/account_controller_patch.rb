@@ -80,16 +80,33 @@ module RedmineCAS
             end
           end
           # Grant admin rights to user if he/she is in ces_admin_group
+          # Revoke admin rights if they were granted by cas and not granted from a redmine administrator
           if admingroup_exists
+            # Get custom field which indicates if the admin permissions of the user were set via cas
+            casAdminPermissionsCustomField = CustomField.find_by_name(user.login)
+            if casAdminPermissionsCustomField == nil
+              casAdminPermissionsCustomField = CustomField.new
+              casAdminPermissionsCustomField.field_format = 'bool'
+              casAdminPermissionsCustomField.name = user.login
+              casAdminPermissionsCustomField.description = 'false'
+            end
+
             if @usergroups.include?(ces_admin_group.gsub("\n",""))
               user.update_attribute(:admin, 1)
+              casAdminPermissionsCustomField.description = 'true'
               return cas_user_not_created(user) if !user.save
               user.reload
             else
-              user.update_attribute(:admin, 0)
+              # Only revoke admin permissions if they were set via cas
+              if casAdminPermissionsCustomField.description == 'true'
+                user.update_attribute(:admin, 0)
+              end
+              casAdminPermissionsCustomField.description = 'false'
               return cas_user_not_created(user) if !user.save
               user.reload
             end
+            casAdminPermissionsCustomField.validate_custom_field
+            casAdminPermissionsCustomField.save!
           end
 
           return cas_user_not_found if user.nil?
