@@ -80,16 +80,46 @@ module RedmineCAS
             end
           end
           # Grant admin rights to user if he/she is in ces_admin_group
+          # Revoke admin rights if they were granted by cas and not granted from a redmine administrator
           if admingroup_exists
+            # Get custom field which indicates if the admin permissions of the user were set via cas
+            casAdminPermissionsCustomField = UserCustomField.find_by_name('casAdmin')
+            # Create custom field if it doesn't exist yet
+            if casAdminPermissionsCustomField == nil
+              casAdminPermissionsCustomField = UserCustomField.new
+              casAdminPermissionsCustomField.field_format = 'bool'
+              casAdminPermissionsCustomField.name = 'casAdmin'
+              casAdminPermissionsCustomField.description = 'Indicates if admin permissions were granted via cas; do not delete!'
+              casAdminPermissionsCustomField.visible = false
+              casAdminPermissionsCustomField.editable = false
+              casAdminPermissionsCustomField.validate_custom_field
+              casAdminPermissionsCustomField.save!
+            end
+
             if @usergroups.include?(ces_admin_group.gsub("\n",""))
               user.update_attribute(:admin, 1)
+              user.custom_field_values.each do |field|
+                if field.custom_field.name == 'casAdmin'
+                  field.value = true
+                end
+              end
               return cas_user_not_created(user) if !user.save
               user.reload
             else
-              user.update_attribute(:admin, 0)
+              # Only revoke admin permissions if they were set via cas
+              if user.custom_field_value(casAdminPermissionsCustomField).to_s == 'true'
+                user.update_attribute(:admin, 0)
+              end
+              user.custom_field_values.each do |field|
+                if field.custom_field.name == 'casAdmin'
+                  field.value = false
+                end
+              end
               return cas_user_not_created(user) if !user.save
               user.reload
             end
+            casAdminPermissionsCustomField.validate_custom_field
+            casAdminPermissionsCustomField.save!
           end
 
           return cas_user_not_found if user.nil?
