@@ -35,6 +35,9 @@ You can achieve this with a tiny plugin: [redmine_activerecord_session_store](ht
 
 By enabling this setting, successfully authenticated users will be automatically added into Redmine if they do not already exist. You *must* define the attribute mapping for at least firstname, lastname and mail attributes for this to work.
 
-## Copyright
+## About
 
-Copyright (c) 2013-2014 Nine Internet Solutions AG. See LICENSE.txt for further details.
+This redmine plugin is currently maintained and funded by [nine](https://nine.ch).
+
+[![logo of the company 'nine'](https://logo.apps.at-nine.ch/Dmqied_eSaoBMQwk3vVgn4UIgDo=/trim/500x0/logo_claim.png)](https://www.nine.ch)
+
