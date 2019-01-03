@@ -5,8 +5,10 @@ module RedmineCAS
     def self.included(base)
       base.send(:include, InstanceMethods)
       base.class_eval do
-        alias_method_chain :verify_authenticity_token, :cas
-        alias_method_chain :require_login, :cas
+        alias_method :verify_authenticity_token_without_cas, :verify_authenticity_token
+        alias_method :verify_authenticity_token, :verify_authenticity_token_with_cas
+        alias_method :require_login_without_cas, :require_login
+        alias_method :require_login, :require_login_with_cas
       end
     end
 
