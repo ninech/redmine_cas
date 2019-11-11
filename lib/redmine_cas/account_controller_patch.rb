@@ -28,10 +28,8 @@ module RedmineCAS
         if CASClient::Frameworks::Rails::Filter.filter(self)
           user = User.find_by_login(session[:cas_user])
           admingroup_exists = false
-          ces_admin_group = `etcdctl --peers $(cat /etc/ces/node_master):4001 get "/config/_global/admin_group"`
-          if $?.exitstatus == 0
-            admingroup_exists = true
-          end
+          ces_admin_group = ENV['ADMIN_GROUP']
+          admingroup_exists = ces_admin_group != nil
 
           # Auto-create user
           if user.nil? && RedmineCAS.autocreate_users?
@@ -41,53 +39,87 @@ module RedmineCAS
             user.assign_attributes(RedmineCAS.user_extra_attributes_from_session(session))
             return cas_user_not_created(user) if !user.save
             user.reload
-
+          else
             user = User.find_by_login(session[:cas_user])
+          end
 
-            # Auto-create user's groups and/or add him/her
-            @usergroups = Array.new
-            for i in session[:cas_extra_attributes]
-              if i[0]=="allgroups"
-                for j in i[1]
-                  @usergroups << j
-                  begin
-                    group = Group.find_by(lastname: j.to_s.downcase)
-                    if group.to_s == ""
-                      # if group does not exist
-                      # create group and add user
-                      @newgroup = Group.new(:lastname => j.to_s, :firstname => "cas")
-                      @newgroup.users << user
-                      @newgroup.save
-                    else
-                      # if not already: add user to existing group
-                      @groupusers = User.active.in_group(group).all()
-                      if not(@groupusers.include?(user))
-                        group.users << user
-                      end
+          # Auto-create user's groups and/or add him/her
+          @usergroups = Array.new
+          for i in session[:cas_extra_attributes]
+            if i[0]=="allgroups"
+              for j in i[1]
+                @usergroups << j
+                begin
+                  group = Group.find_by(lastname: j.to_s)
+                  if group.to_s == ""
+                    # if group does not exist
+                    # create group and add user
+                    @newgroup = Group.new(:lastname => j.to_s, :firstname => "cas")
+                    @newgroup.users << user
+                    @newgroup.save
+                  else
+                    # if not already: add user to existing group
+                    @groupusers = User.active.in_group(group).all()
+                    if not(@groupusers.include?(user))
+                      group.users << user
                     end
-                  rescue Exception => e
-                    logger.info e.message
                   end
+                rescue Exception => e
+                  logger.info e.message
                 end
-                @casgroups = Group.where(firstname: "cas")
-                for l in @casgroups
-                  @casgroup = Group.find_by(lastname: l.to_s)
-                  @casgroupusers = User.active.in_group(@casgroup).all()
-                  if @casgroupusers.include?(user) and not(@usergroups.include?(l.to_s))
-                    # remove user from group
-                    @casgroup.users.delete(user)
-                  end
+              end
+              @casgroups = Group.where(firstname: "cas")
+              for l in @casgroups
+                @casgroup = Group.find_by(lastname: l.to_s)
+                @casgroupusers = User.active.in_group(@casgroup).all()
+                if @casgroupusers.include?(user) and not(@usergroups.include?(l.to_s))
+                  # remove user from group
+                  @casgroup.users.delete(user)
                 end
               end
             end
-            # Grant admin rights to user if he/she is in ces_admin_group
-            if admingroup_exists
-              if @usergroups.include?(ces_admin_group.gsub("\n",""))
-                user.update_attribute(:admin, 1)
-                return cas_user_not_created(user) if !user.save
-                user.reload
-              end
+          end
+          # Grant admin rights to user if he/she is in ces_admin_group
+          # Revoke admin rights if they were granted by cas and not granted from a redmine administrator
+          if admingroup_exists
+            # Get custom field which indicates if the admin permissions of the user were set via cas
+            casAdminPermissionsCustomField = UserCustomField.find_by_name('casAdmin')
+            # Create custom field if it doesn't exist yet
+            if casAdminPermissionsCustomField == nil
+              casAdminPermissionsCustomField = UserCustomField.new
+              casAdminPermissionsCustomField.field_format = 'bool'
+              casAdminPermissionsCustomField.name = 'casAdmin'
+              casAdminPermissionsCustomField.description = 'Indicates if admin permissions were granted via cas; do not delete!'
+              casAdminPermissionsCustomField.visible = false
+              casAdminPermissionsCustomField.editable = false
+              casAdminPermissionsCustomField.validate_custom_field
+              casAdminPermissionsCustomField.save!
             end
+
+            if @usergroups.include?(ces_admin_group.gsub("\n",""))
+              user.update_attribute(:admin, 1)
+              user.custom_field_values.each do |field|
+                if field.custom_field.name == 'casAdmin'
+                  field.value = true
+                end
+              end
+              return cas_user_not_created(user) if !user.save
+              user.reload
+            else
+              # Only revoke admin permissions if they were set via cas
+              if user.custom_field_value(casAdminPermissionsCustomField).to_s == 'true'
+                user.update_attribute(:admin, 0)
+              end
+              user.custom_field_values.each do |field|
+                if field.custom_field.name == 'casAdmin'
+                  field.value = false
+                end
+              end
+              return cas_user_not_created(user) if !user.save
+              user.reload
+            end
+            casAdminPermissionsCustomField.validate_custom_field
+            casAdminPermissionsCustomField.save!
           end
 
           return cas_user_not_found if user.nil?
