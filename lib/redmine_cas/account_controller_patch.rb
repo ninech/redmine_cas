@@ -141,7 +141,7 @@ module RedmineCAS
       end
 
       def redirect_to_ref_or_default
-        default_url = url_for(params.merge(:ticket => nil))
+        default_url = url_for(params.permit(:ticket).merge(:ticket => nil))
         if params.has_key?(:ref)
           # do some basic validation on ref, to prevent a malicious link to redirect
           # to another site.
