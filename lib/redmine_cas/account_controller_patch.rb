@@ -126,26 +126,6 @@ module RedmineCAS
           return cas_account_pending unless user.active?
 
           user.update_attribute(:last_login_on, Time.now)
-          # Change user's admin rights according to cas settings
-          @usergroups = Array.new
-          for i in session[:cas_extra_attributes]
-            if i[0]=="allgroups"
-              for j in i[1]
-                @usergroups << j
-              end
-            end
-          end
-          if admingroup_exists
-            if @usergroups.include?(ces_admin_group.gsub("\n",""))
-              user.update_attribute(:admin, 1)
-              user.save
-              user.reload
-            else
-              user.update_attribute(:admin, 0)
-              user.save
-              user.reload
-            end
-          end
           user.update_attributes(RedmineCAS.user_extra_attributes_from_session(session))
           if RedmineCAS.single_sign_out_enabled?
             # logged_user= would start a new session and break single sign-out
