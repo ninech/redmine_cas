@@ -5,7 +5,8 @@ module RedmineCAS
     def self.included(base)
       base.send(:include, InstanceMethods)
       base.class_eval do
-        alias_method_chain :logout, :cas
+        alias_method :logout_without_cas, :logout
+        alias_method :logout, :logout_with_cas
       end
     end
 
@@ -140,7 +141,7 @@ module RedmineCAS
       end
 
       def redirect_to_ref_or_default
-        default_url = url_for(params.merge(:ticket => nil))
+        default_url = url_for(params.permit(:ticket).merge(:ticket => nil))
         if params.has_key?(:ref)
           # do some basic validation on ref, to prevent a malicious link to redirect
           # to another site.
