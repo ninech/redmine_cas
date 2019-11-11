@@ -5,7 +5,8 @@ module RedmineCAS
     def self.included(base)
       base.send(:include, InstanceMethods)
       base.class_eval do
-        alias_method_chain :logout, :cas
+        alias_method :logout_without_cas, :logout
+        alias_method :logout, :logout_with_cas
       end
     end
 
