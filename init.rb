@@ -7,10 +7,10 @@ require_dependency 'redmine_cas_hook_listener'
 
 Redmine::Plugin.register :redmine_cas do
   name 'Redmine CAS plugin'
-  author 'Robert Auer (Triology GmbH)'
+  author 'Robert Auer (Cloudogu GmbH)'
   description 'Plugin to CASify your Redmine installation.'
   version '1.2.14'
-  url 'https://github.com/robertauer/redmine_cas'
+  url 'https://github.com/cloudogu/redmine_cas'
 
   settings :default => {
     'enabled' => false,
