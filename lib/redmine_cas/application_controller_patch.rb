@@ -9,8 +9,8 @@ module RedmineCAS
         alias_method :verify_authenticity_token, :verify_authenticity_token_with_cas
         alias_method :require_login_without_cas, :require_login
         alias_method :require_login, :require_login_with_cas
-        alias_method :original_check_if_login_required, :check_if_login_required
-        alias_method :check_if_login_required, :cas_check_if_login_required
+        alias_method :old_check_if_login_required, :check_if_login_required
+        alias_method :check_if_login_required, :new_check_if_login_required
       end
     end
 
@@ -33,8 +33,8 @@ module RedmineCAS
         true
       end
 
-      def cas_check_if_login_required
-        return original_check_if_login_required unless RedmineCAS.enabled?
+      def new_check_if_login_required
+        return true if old_check_if_login_required
         require_login if params.has_key?(:ticket)
       end
 

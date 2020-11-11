@@ -7,20 +7,16 @@ module RedmineCAS
       base.class_eval do
         alias_method :logout_without_cas, :logout
         alias_method :logout, :logout_with_cas
-        alias_method :original_login, :login
-        alias_method :login, :cas_login
+        alias_method :old_login, :login
+        alias_method :login, :new_login
       end
     end
 
     module InstanceMethods
-      def cas_login
-        return original_login unless RedmineCAS.enabled?
-        HOME_URL = "tbd"
-        CAS_URL = "/cas/login"
-
+      def new_login
+        return old_login unless RedmineCAS.enabled?
         prev_url = request.referrer
-        prev_url = home_url if prev_url.to_s.strip.empty?
-
+        cas_url = "/cas/login"
         login_url = cas_url + "?service=" + ERB::Util.url_encode(prev_url)
         redirect_to login_url
       end
