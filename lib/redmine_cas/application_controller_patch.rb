@@ -34,7 +34,7 @@ module RedmineCAS
       end
 
       def cas_check_if_login_required
-        return true if original_check_if_login_required
+        return original_check_if_login_required unless RedmineCAS.enabled?
         require_login if params.has_key?(:ticket)
       end
 
