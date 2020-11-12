@@ -34,7 +34,7 @@ module RedmineCAS
 
         if User.current.logged?
           # User already logged in.
-          redirect_to_ref_or_default
+          redirect_to home_url
           return
         end
 
