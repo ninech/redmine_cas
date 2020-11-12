@@ -1,4 +1,5 @@
 require 'redmine_cas'
+CAS_URL = "/cas/login"
 
 module RedmineCAS
   module AccountControllerPatch
@@ -17,8 +18,7 @@ module RedmineCAS
         return original_login unless RedmineCAS.enabled? or not RedmineCAS.setting(:redirect_enabled)
         prev_url = request.referrer
         prev_url = home_url if prev_url.to_s.strip.empty?
-        cas_url = "/cas/login"
-        login_url = cas_url + "?service=" + ERB::Util.url_encode(prev_url)
+        login_url = CAS_URL + "?service=" + ERB::Util.url_encode(prev_url)
         redirect_to login_url
       end
 
