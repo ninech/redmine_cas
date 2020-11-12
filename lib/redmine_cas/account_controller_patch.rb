@@ -15,7 +15,8 @@ module RedmineCAS
 
     module InstanceMethods
       def cas_login
-        return original_login unless RedmineCAS.enabled? or not RedmineCAS.setting(:redirect_enabled)
+        return original_login unless RedmineCAS.enabled?
+        return unless RedmineCAS.setting(:redirect_enabled)
         prev_url = request.referrer
         prev_url = home_url if prev_url.to_s.strip.empty?
         login_url = CAS_URL + "?service=" + ERB::Util.url_encode(prev_url)
