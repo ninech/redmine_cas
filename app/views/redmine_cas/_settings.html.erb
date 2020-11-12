@@ -5,6 +5,7 @@
 <p>
   <%= label_tag "settings[redirect_enabled]", l(:redmine_cas_settings_redirect_enabled_label) %>
   <%= check_box_tag "settings[redirect_enabled]", 1, @settings[:redirect_enabled] %>
+  <em class="info"><%= l(:redmine_cas_settings_redirect_enabled_description).html_safe %></em>
 </p>
 <p>
   <%= label_tag "settings[cas_url]", l(:redmine_cas_settings_cas_url_label) %>
