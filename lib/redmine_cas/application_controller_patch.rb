@@ -30,6 +30,8 @@ module RedmineCAS
           end
           return false
         end
+        default_url = url_for(params.permit(:ticket).merge(:ticket => nil))
+        redirect_to default_url unless default_url == request.original_url
         true
       end
 
