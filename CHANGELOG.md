@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - functionality to enable a redirect from login page to cas login when anonymous access is activated
+- scripts for easier development in EcoSystem
 
 ### Fixed
 - redirect loop when logging in with cas when anonymous access is activated
