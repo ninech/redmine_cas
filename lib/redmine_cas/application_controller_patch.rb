@@ -30,14 +30,17 @@ module RedmineCAS
           end
           return false
         end
-        default_url = url_for(params.permit(:ticket).merge(:ticket => nil))
-        redirect_to default_url unless default_url == request.original_url
+        # this code was added to remove the ticket parameter in url when it is not necessary
+        if params.has_key?(:ticket)
+          default_url = url_for(params.permit(:ticket).merge(:ticket => nil))
+          redirect_to default_url
+        end
         true
       end
 
       def cas_check_if_login_required
         return original_check_if_login_required unless RedmineCAS.enabled?
-        require_login if params.has_key?(:ticket)
+        require_login if params.has_key?(:ticket) or original_check_if_login_required
       end
 
       def verify_authenticity_token_with_cas
