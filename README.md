@@ -15,6 +15,13 @@ We use [CASino](http://casino.rbcas.com) as CAS server, but it might work with o
 4. Follow the "Configure" link and set the parameters
 5. Party
 
+## Development in EcoSystem
+You can use the scripts inside the `dev`-folder to quickly install this plugin 
+
+1. Place this repository somewhere inside the EcoSystem
+2. Execute `dev/apply.sh <doguname>` to install this plugin for a dogu (redmine/easyredmine)
+3. If you want to see extended logs, execute `dev/logs.sh <doguname>` 
+
 ## Notes
 
 ### Usage
