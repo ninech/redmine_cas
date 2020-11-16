@@ -1,5 +1,7 @@
 en:
   redmine_cas_settings_enabled_label: 'Enabled'
+  redmine_cas_settings_redirect_enabled_label: 'Redirect from login'
+  redmine_cas_settings_redirect_enabled_description: 'Only used when anonymous access is activated. Once activated, the application login will no longer be shown and the user will always be redirected to the cas login.'
   redmine_cas_settings_cas_url_label: 'CAS server URL'
   redmine_cas_settings_cas_url_helptext: 'Base URL to your CAS server.'
   redmine_cas_settings_attributes_mapping_label: 'Attributes mapping'

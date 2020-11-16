@@ -1,4 +1,5 @@
 require 'redmine_cas'
+CAS_URL = "/cas/login"
 
 module RedmineCAS
   module AccountControllerPatch
@@ -7,10 +8,21 @@ module RedmineCAS
       base.class_eval do
         alias_method :logout_without_cas, :logout
         alias_method :logout, :logout_with_cas
+        alias_method :original_login, :login
+        alias_method :login, :cas_login
       end
     end
 
     module InstanceMethods
+      def cas_login
+        return original_login unless RedmineCAS.enabled?
+        return unless RedmineCAS.setting(:redirect_enabled)
+        prev_url = request.referrer
+        prev_url = home_url if prev_url.to_s.strip.empty?
+        login_url = CAS_URL + "?service=" + ERB::Util.url_encode(prev_url)
+        redirect_to login_url
+      end
+
       def logout_with_cas
         return logout_without_cas unless RedmineCAS.enabled?
         logout_user
@@ -22,7 +34,7 @@ module RedmineCAS
 
         if User.current.logged?
           # User already logged in.
-          redirect_to_ref_or_default
+          redirect_to home_url
           return
         end
 
@@ -142,19 +154,21 @@ module RedmineCAS
 
       def redirect_to_ref_or_default
         default_url = url_for(params.permit(:ticket).merge(:ticket => nil))
+        redirect_url = request.original_url
         if params.has_key?(:ref)
           # do some basic validation on ref, to prevent a malicious link to redirect
           # to another site.
           new_url = params[:ref]
           if /http(s)?:\/\/|@/ =~ new_url
             # evil referrer!
-            redirect_to default_url
+            redirect_url = default_url
           else
-            redirect_to request.base_url + params[:ref]
+            redirect_url = request.base_url + params[:ref]
           end
         else
-          redirect_to default_url
+          redirect_url = default_url
         end
+        redirect_to redirect_url unless redirect_url == request.original_url
       end
 
       def cas_account_pending
