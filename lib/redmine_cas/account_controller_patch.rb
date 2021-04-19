@@ -120,7 +120,8 @@ module RedmineCAS
               user.reload
             else
               # Only revoke admin permissions if they were set via cas
-              if user.custom_field_value(casAdminPermissionsCustomField).to_s == 'true'
+              wasCreatedByCAS = user.custom_field_value(casAdminPermissionsCustomField).to_s == 'true' || user.custom_field_value(casAdminPermissionsCustomField).to_s == '1'
+              if wasCreatedByCAS
                 user.update_attribute(:admin, 0)
               end
               user.custom_field_values.each do |field|
